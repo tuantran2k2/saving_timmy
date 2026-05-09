@@ -1,0 +1,82 @@
+{
+  "funds": [
+    {
+      "id": "fund_1",
+      "title": "Tiết kiệm chung",
+      "description": "Quỹ tiết kiệm hàng tháng",
+      "color": "#10b981",
+      "icon": "piggy",
+      "targetAmount": 100000000,
+      "deadline": "2026-12-31",
+      "transactions": [
+        {
+          "id": "1",
+          "type": "deposit",
+          "amount": 4500000,
+          "note": "Tiết kiệm tháng 1",
+          "date": "2026-01-01",
+          "category": "monthly"
+        },
+        {
+          "id": "2",
+          "type": "deposit",
+          "amount": 4000000,
+          "note": "Tiết kiệm tháng 2",
+          "date": "2026-02-01",
+          "category": "monthly"
+        },
+        {
+          "id": "3",
+          "type": "withdraw",
+          "amount": 3500000,
+          "note": "Về quê ăn Tết",
+          "date": "2026-02-15",
+          "category": "other"
+        },
+        {
+          "id": "4",
+          "type": "deposit",
+          "amount": 1000000,
+          "note": "Tiết kiệm tháng 3",
+          "date": "2026-03-01",
+          "category": "monthly"
+        },
+        {
+          "id": "5",
+          "type": "deposit",
+          "amount": 18600000,
+          "note": "Tiết kiệm tháng 4",
+          "date": "2026-04-01",
+          "category": "monthly"
+        },
+        {
+          "id": "6",
+          "type": "withdraw",
+          "amount": 5600000,
+          "note": "Đi ăn cưới Minh và Cúc",
+          "date": "2026-04-15",
+          "category": "other"
+        }
+      ]
+    },
+    {
+      "id": "fund_2",
+      "title": "Đi Thái Lan",
+      "description": "Đi tham gia tết Thái Lan",
+      "color": "#f59e0b",
+      "icon": "plane",
+      "targetAmount": 15000000,
+      "deadline": "2027-04-01",
+      "transactions": [
+        {
+          "id": "1778307563408",
+          "type": "deposit",
+          "amount": 1000000,
+          "note": "Đi Thái Lan",
+          "date": "2026-05-01",
+          "category": "monthly"
+        }
+      ]
+    }
+  ]
+}
