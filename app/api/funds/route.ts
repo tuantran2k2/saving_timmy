@@ -5,8 +5,13 @@ import { Fund } from "@/lib/types";
 const COL = "funds";
 
 export async function GET() {
-  const funds = await getCollection(COL);
-  return NextResponse.json(funds);
+  try {
+    const funds = await getCollection(COL);
+    return NextResponse.json(funds);
+  } catch (err) {
+    console.error("GET /api/funds error:", err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }
 
 export async function POST(req: NextRequest) {
