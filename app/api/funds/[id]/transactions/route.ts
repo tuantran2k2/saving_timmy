@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/firebase";
-import { FieldValue } from "firebase-admin/firestore";
-import { Transaction } from "@/lib/types";
+import { getDocument, setDocument } from "@/lib/firebase";
+import { Fund, Transaction } from "@/lib/types";
 
 const COL = "funds";
 
@@ -10,10 +9,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const doc = await db.collection(COL).doc(id).get();
-  if (!doc.exists) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  const fund = doc.data();
-  return NextResponse.json(fund?.transactions ?? []);
+  const fund = await getDocument(COL, id) as Fund | null;
+  if (!fund) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(fund.transactions ?? []);
 }
 
 export async function POST(
@@ -22,6 +20,8 @@ export async function POST(
 ) {
   const { id } = await params;
   const body = await req.json();
+  const fund = await getDocument(COL, id) as Fund | null;
+  if (!fund) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const newTx: Transaction = {
     id: Date.now().toString(),
@@ -32,9 +32,8 @@ export async function POST(
     category: body.category || "other",
   };
 
-  await db.collection(COL).doc(id).update({
-    transactions: FieldValue.arrayUnion(newTx),
-  });
+  const transactions = [...(fund.transactions ?? []), newTx];
+  await setDocument(COL, id, { ...fund, id: undefined, transactions });
 
   return NextResponse.json(newTx, { status: 201 });
 }
@@ -47,14 +46,13 @@ export async function DELETE(
   const { searchParams } = new URL(req.url);
   const txId = searchParams.get("txId");
 
-  const doc = await db.collection(COL).doc(id).get();
-  if (!doc.exists) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const fund = await getDocument(COL, id) as Fund | null;
+  if (!fund) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const fund = doc.data();
-  const transactions = (fund?.transactions ?? []).filter(
+  const transactions = (fund.transactions ?? []).filter(
     (t: Transaction) => t.id !== txId
   );
+  await setDocument(COL, id, { ...fund, id: undefined, transactions });
 
-  await db.collection(COL).doc(id).update({ transactions });
   return NextResponse.json({ success: true });
 }
