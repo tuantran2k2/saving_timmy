@@ -84,6 +84,15 @@ export default function FundPage() {
   const daysLeft = deadline
     ? Math.ceil((deadline.getTime() - Date.now()) / 86400000)
     : null;
+  const monthsLeft = deadline
+    ? Math.max(
+        (deadline.getFullYear() - new Date().getFullYear()) * 12 +
+        deadline.getMonth() - new Date().getMonth(),
+        1
+      )
+    : null;
+  const remaining = fund.targetAmount > 0 ? Math.max(fund.targetAmount - balance, 0) : 0;
+  const perMonth = monthsLeft && remaining > 0 ? Math.ceil(remaining / monthsLeft) : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-emerald-50/30">
@@ -176,6 +185,12 @@ export default function FundPage() {
                     <> · cần thêm <span className="text-white font-semibold">{formatVND(fund.targetAmount - balance)}</span></>
                   )}
                 </p>
+              )}
+              {perMonth && (
+                <div className="mt-2 bg-white/15 rounded-xl px-3 py-2 flex items-center justify-between">
+                  <span className="text-white/70 text-xs">Cần tiết kiệm mỗi tháng</span>
+                  <span className="text-white font-bold text-sm">{formatVND(perMonth)}</span>
+                </div>
               )}
             </div>
           )}

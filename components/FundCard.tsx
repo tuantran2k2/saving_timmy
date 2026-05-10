@@ -23,6 +23,16 @@ export default function FundCard({ fund, onEdit, onDelete, onClick }: FundCardPr
     ? Math.ceil((deadline.getTime() - Date.now()) / 86400000)
     : null;
 
+  const monthsLeft = deadline
+    ? Math.max(
+        (deadline.getFullYear() - new Date().getFullYear()) * 12 +
+        deadline.getMonth() - new Date().getMonth(),
+        1
+      )
+    : null;
+  const remaining = fund.targetAmount > 0 ? Math.max(fund.targetAmount - balance, 0) : 0;
+  const perMonth = monthsLeft && remaining > 0 ? Math.ceil(remaining / monthsLeft) : null;
+
   return (
     <div
       className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer group overflow-hidden"
@@ -90,6 +100,19 @@ export default function FundCard({ fund, onEdit, onDelete, onClick }: FundCardPr
                 style={{ width: `${progress}%`, backgroundColor: fund.color }}
               />
             </div>
+          </div>
+        )}
+
+        {/* Per month hint */}
+        {perMonth && (
+          <div
+            className="rounded-xl px-3 py-2 mb-3 text-xs flex items-center justify-between"
+            style={{ backgroundColor: fund.color + "11" }}
+          >
+            <span className="text-gray-500">Cần tiết kiệm mỗi tháng</span>
+            <span className="font-bold" style={{ color: fund.color }}>
+              {formatVND(perMonth)}
+            </span>
           </div>
         )}
 
