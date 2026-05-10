@@ -2,11 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { PiggyBank, Plus, RefreshCw, Wallet } from "lucide-react";
+import { PiggyBank, Plus, RefreshCw } from "lucide-react";
 import { Fund } from "@/lib/types";
 import { formatVND, getTotalBalance } from "@/lib/utils";
 import FundCard from "@/components/FundCard";
 import FundModal from "@/components/FundModal";
+import FundIcon from "@/components/FundIcon";
 
 export default function Home() {
   const router = useRouter();
@@ -120,7 +121,7 @@ export default function Home() {
                     className="w-8 h-8 rounded-xl flex items-center justify-center mb-2"
                     style={{ backgroundColor: f.color + "22" }}
                   >
-                    <Wallet size={16} style={{ color: f.color }} />
+                    <FundIcon name={f.icon} size={16} color={f.color} />
                   </div>
                   <p className="text-xs text-gray-400 truncate">{f.title}</p>
                   <p className="text-sm font-bold mt-0.5" style={{ color: f.color }}>
