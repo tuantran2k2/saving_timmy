@@ -19,7 +19,7 @@ export default function Home() {
     setLoading(true);
     const res = await fetch("/api/funds");
     const json = await res.json();
-    setFunds(json);
+    setFunds(Array.isArray(json) ? json : []);
     setLoading(false);
   }, []);
 

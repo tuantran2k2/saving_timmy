@@ -1,20 +1,35 @@
-import { GoogleAuth } from "google-auth-library";
+import { SignJWT, importPKCS8 } from "jose";
 
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID!;
+const CLIENT_EMAIL = process.env.FIREBASE_CLIENT_EMAIL!;
+const PRIVATE_KEY = process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n");
 const BASE = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents`;
 
-const auth = new GoogleAuth({
-  credentials: {
-    client_email: process.env.FIREBASE_CLIENT_EMAIL,
-    private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
-  },
-  scopes: ["https://www.googleapis.com/auth/datastore"],
-});
+async function getToken(): Promise<string> {
+  const privateKey = await importPKCS8(PRIVATE_KEY, "RS256");
+  const now = Math.floor(Date.now() / 1000);
+  const token = await new SignJWT({
+    scope: "https://www.googleapis.com/auth/datastore",
+  })
+    .setProtectedHeader({ alg: "RS256" })
+    .setIssuer(CLIENT_EMAIL)
+    .setSubject(CLIENT_EMAIL)
+    .setAudience("https://oauth2.googleapis.com/token")
+    .setIssuedAt(now)
+    .setExpirationTime(now + 3600)
+    .sign(privateKey);
 
-async function getToken() {
-  const client = await auth.getClient();
-  const token = await client.getAccessToken();
-  return token.token;
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion: token,
+    }),
+  });
+  const json = await res.json();
+  if (!json.access_token) throw new Error(`Token error: ${JSON.stringify(json)}`);
+  return json.access_token;
 }
 
 // ---- Firestore value converters ----
@@ -70,7 +85,6 @@ export async function getCollection(col: string): Promise<Array<Record<string, u
     headers: { Authorization: `Bearer ${token}` },
   });
   const json = await res.json();
-  console.log("Firestore response status:", res.status, "body:", JSON.stringify(json).slice(0, 500));
   if (!json.documents) return [];
   return json.documents.map((doc: { name: string; fields: Record<string, unknown> }) => {
     const id = doc.name.split("/").pop();
