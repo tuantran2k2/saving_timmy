@@ -11,20 +11,42 @@ interface FundModalProps {
   initialData?: Fund;
 }
 
-const COLORS = [
+const PRESET_COLORS = [
   "#10b981", "#3b82f6", "#f59e0b", "#ef4444",
   "#8b5cf6", "#ec4899", "#06b6d4", "#f97316",
+  "#84cc16", "#14b8a6", "#a855f7", "#f43f5e",
 ];
 
 const ICONS: { key: FundIconType; label: string }[] = [
   { key: "piggy", label: "Heo đất" },
+  { key: "wallet", label: "Ví tiền" },
+  { key: "bitcoin", label: "Crypto" },
+  { key: "briefcase", label: "Công việc" },
   { key: "plane", label: "Du lịch" },
+  { key: "ship", label: "Du thuyền" },
+  { key: "bike", label: "Xe đạp" },
+  { key: "car", label: "Xe hơi" },
   { key: "home", label: "Nhà cửa" },
-  { key: "car", label: "Xe cộ" },
+  { key: "building", label: "Bất động sản" },
+  { key: "graduation", label: "Học tập" },
+  { key: "book", label: "Sách" },
+  { key: "laptop", label: "Công nghệ" },
+  { key: "phone", label: "Điện thoại" },
+  { key: "camera", label: "Máy ảnh" },
+  { key: "gamepad", label: "Game" },
+  { key: "music", label: "Âm nhạc" },
+  { key: "dumbbell", label: "Gym" },
+  { key: "food", label: "Ẩm thực" },
+  { key: "coffee", label: "Cafe" },
+  { key: "shopping", label: "Mua sắm" },
   { key: "heart", label: "Sức khoẻ" },
-  { key: "star", label: "Mơ ước" },
+  { key: "baby", label: "Em bé" },
+  { key: "paw", label: "Thú cưng" },
   { key: "gift", label: "Quà tặng" },
-  { key: "book", label: "Học tập" },
+  { key: "star", label: "Mơ ước" },
+  { key: "sun", label: "Nghỉ dưỡng" },
+  { key: "tree", label: "Thiên nhiên" },
+  { key: "flower", label: "Hoa" },
 ];
 
 export default function FundModal({ onClose, onSave, initialData }: FundModalProps) {
@@ -64,32 +86,32 @@ export default function FundModal({ onClose, onSave, initialData }: FundModalPro
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
-          {/* Icon & Color preview */}
+          {/* Preview */}
           <div className="flex items-center justify-center">
-            <div
-              className="rounded-2xl p-5"
-              style={{ backgroundColor: color + "22" }}
-            >
+            <div className="rounded-2xl p-5" style={{ backgroundColor: color + "22" }}>
               <FundIcon name={icon} size={40} color={color} />
             </div>
           </div>
 
           {/* Icon picker */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Biểu tượng</label>
-            <div className="grid grid-cols-4 gap-2">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Biểu tượng <span className="text-gray-400 font-normal">({ICONS.length} loại)</span>
+            </label>
+            <div className="grid grid-cols-5 gap-1.5 max-h-52 overflow-y-auto pr-1">
               {ICONS.map((i) => (
                 <button
                   key={i.key}
                   type="button"
                   onClick={() => setIcon(i.key)}
-                  className={`flex flex-col items-center gap-1 p-2.5 rounded-xl border-2 transition-all ${
+                  className={`flex flex-col items-center gap-1 p-2 rounded-xl border-2 transition-all ${
                     icon === i.key ? "border-current" : "border-gray-100 hover:border-gray-200"
                   }`}
                   style={icon === i.key ? { borderColor: color, backgroundColor: color + "11" } : {}}
+                  title={i.label}
                 >
-                  <FundIcon name={i.key} size={20} color={icon === i.key ? color : "#9ca3af"} />
-                  <span className="text-xs text-gray-500">{i.label}</span>
+                  <FundIcon name={i.key} size={18} color={icon === i.key ? color : "#9ca3af"} />
+                  <span className="text-[10px] text-gray-400 leading-tight text-center">{i.label}</span>
                 </button>
               ))}
             </div>
@@ -98,13 +120,14 @@ export default function FundModal({ onClose, onSave, initialData }: FundModalPro
           {/* Color picker */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Màu sắc</label>
-            <div className="flex gap-2 flex-wrap">
-              {COLORS.map((c) => (
+            {/* Preset colors */}
+            <div className="flex gap-2 flex-wrap mb-3">
+              {PRESET_COLORS.map((c) => (
                 <button
                   key={c}
                   type="button"
                   onClick={() => setColor(c)}
-                  className="w-8 h-8 rounded-full transition-transform hover:scale-110"
+                  className="w-8 h-8 rounded-full transition-transform hover:scale-110 flex-shrink-0"
                   style={{
                     backgroundColor: c,
                     outline: color === c ? `3px solid ${c}` : "none",
@@ -112,6 +135,34 @@ export default function FundModal({ onClose, onSave, initialData }: FundModalPro
                   }}
                 />
               ))}
+            </div>
+            {/* RGB custom picker */}
+            <div className="flex items-center gap-3">
+              <div className="relative flex-shrink-0">
+                <input
+                  type="color"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer p-0.5"
+                  title="Chọn màu tuỳ chỉnh"
+                />
+              </div>
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={color}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    if (/^#[0-9a-fA-F]{0,6}$/.test(v)) setColor(v);
+                  }}
+                  placeholder="#10b981"
+                  className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm font-mono text-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                />
+              </div>
+              <div
+                className="w-10 h-10 rounded-xl border border-gray-200 flex-shrink-0"
+                style={{ backgroundColor: color }}
+              />
             </div>
           </div>
 
@@ -125,7 +176,6 @@ export default function FundModal({ onClose, onSave, initialData }: FundModalPro
               placeholder="Ví dụ: Quỹ du lịch, Mua nhà..."
               required
               className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:border-transparent"
-              style={{ "--tw-ring-color": color } as React.CSSProperties}
             />
           </div>
 

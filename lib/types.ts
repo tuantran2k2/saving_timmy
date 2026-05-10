@@ -11,7 +11,11 @@ export type TransactionCategory =
   | "entertainment"
   | "other";
 
-export type FundIcon = "piggy" | "plane" | "home" | "car" | "heart" | "star" | "gift" | "book";
+export type FundIcon =
+  | "piggy" | "plane" | "home" | "car" | "heart" | "star" | "gift" | "book"
+  | "coffee" | "music" | "camera" | "shopping" | "phone" | "laptop" | "baby"
+  | "dumbbell" | "gamepad" | "food" | "graduation" | "briefcase" | "wallet"
+  | "bitcoin" | "building" | "ship" | "bike" | "paw" | "sun" | "tree" | "flower";
 
 export interface Transaction {
   id: string;
