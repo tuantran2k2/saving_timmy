@@ -66,12 +66,11 @@ function parseValue(val: Record<string, unknown>): unknown {
 
 export async function getCollection(col: string): Promise<Array<Record<string, unknown>>> {
   const token = await getToken();
-  const url = `${BASE}/${col}?orderBy=createdAt`;
-  const res = await fetch(url, {
+  const res = await fetch(`${BASE}/${col}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
   const json = await res.json();
-  console.log("Firestore response status:", res.status, "body:", JSON.stringify(json).slice(0, 300));
+  console.log("Firestore response status:", res.status, "body:", JSON.stringify(json).slice(0, 500));
   if (!json.documents) return [];
   return json.documents.map((doc: { name: string; fields: Record<string, unknown> }) => {
     const id = doc.name.split("/").pop();
