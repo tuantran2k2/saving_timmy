@@ -11,4 +11,8 @@ if (!getApps().length) {
   });
 }
 
-export const db = getFirestore();
+const db = getFirestore();
+// Force REST transport — required for Vercel serverless (gRPC không hoạt động)
+db.settings({ preferRest: true });
+
+export { db };
