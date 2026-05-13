@@ -64,12 +64,14 @@ export default function FundCard({ fund, onEdit, onDelete, onClick }: FundCardPr
           >
             <button
               onClick={() => onEdit(fund)}
+              title="Chỉnh sửa"
               className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <Pencil size={14} />
             </button>
             <button
               onClick={() => onDelete(fund.id)}
+              title="Xóa"
               className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-red-400 transition-colors"
             >
               <Trash2 size={14} />

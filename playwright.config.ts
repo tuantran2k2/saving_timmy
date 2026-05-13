@@ -19,5 +19,10 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  // Do NOT start a web server automatically – tests assume it's already running
+  webServer: {
+    command: "pnpm run dev",
+    url: "http://localhost:3000",
+    reuseExistingServer: true,
+    timeout: 60000,
+  },
 });

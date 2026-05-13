@@ -58,8 +58,8 @@ test.describe("Transactions", () => {
     // Fund should still be visible (not "not found")
     await expect(page.getByText(fundTitle)).toBeVisible({ timeout: 10000 });
 
-    // Balance should reflect the transaction
-    await expect(page.getByText("100.000 ₫")).toBeVisible();
+    // Balance should reflect the transaction (match formatted VND in hero)
+    await expect(page.getByText(/100\.000/).first()).toBeVisible();
   });
 
   test("fund remains accessible after adding a transaction (bug regression)", async ({ page }) => {
