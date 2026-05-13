@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
   res.cookies.set("app_unlocked", "1", {
     httpOnly: true,
     sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7, // 7 ngày
+    maxAge: 60 * 60 * 2, // 2 giờ
     path: "/",
   });
   return res;
