@@ -90,7 +90,10 @@ export async function getCollection(col: string): Promise<Array<Record<string, u
   if (!json.documents) return [];
   return json.documents.map((doc: { name: string; fields: Record<string, unknown> }) => {
     const id = doc.name.split("/").pop();
-    return { id, ...fromFirestore(doc.fields) };
+    // Always use the id from the document path, not from stored fields
+    const { id: _ignored, ...rest } = fromFirestore(doc.fields);
+    void _ignored;
+    return { id, ...rest };
   });
 }
 
@@ -101,7 +104,10 @@ export async function getDocument(col: string, id: string): Promise<Record<strin
   });
   if (!res.ok) return null;
   const doc = await res.json();
-  return { id, ...fromFirestore(doc.fields) };
+  // Always use the id from the document path, not from stored fields
+  const { id: _ignored, ...rest } = fromFirestore(doc.fields ?? {});
+  void _ignored;
+  return { id, ...rest };
 }
 
 export async function createDocument(col: string, data: Record<string, unknown>): Promise<string> {
@@ -122,10 +128,17 @@ export async function createDocument(col: string, data: Record<string, unknown>)
 export async function setDocument(col: string, id: string, data: Record<string, unknown>): Promise<void> {
   const token = await getToken();
   const fields: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(data)) {
+  // Filter out undefined values to avoid writing null to Firestore for missing fields
+  const cleanData = Object.fromEntries(
+    Object.entries(data).filter(([, v]) => v !== undefined)
+  );
+  for (const [k, v] of Object.entries(cleanData)) {
     fields[k] = toFirestore(v);
   }
-  await fetch(`${BASE}/${col}/${id}`, {
+  // Build updateMask so PATCH only touches the fields we provide
+  const fieldPaths = Object.keys(cleanData).map((k) => `updateMask.fieldPaths=${encodeURIComponent(k)}`).join("&");
+  const url = `${BASE}/${col}/${id}?${fieldPaths}`;
+  await fetch(url, {
     method: "PATCH",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     body: JSON.stringify({ fields }),
